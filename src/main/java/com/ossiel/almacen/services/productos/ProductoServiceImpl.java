@@ -4,6 +4,7 @@ import com.ossiel.almacen.dto.productos.ProductoRequest;
 import com.ossiel.almacen.dto.productos.ProductoResponse;
 import com.ossiel.almacen.entities.Producto;
 import com.ossiel.almacen.enums.Categoria;
+import com.ossiel.almacen.exceptions.DatoInvalidoException;
 import com.ossiel.almacen.exceptions.RecursoNoEncontradoException;
 import com.ossiel.almacen.mappers.ProductoMapper;
 import com.ossiel.almacen.repositories.ProductoRepository;
@@ -26,9 +27,24 @@ public class ProductoServiceImpl implements ProductoService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<ProductoResponse> listar(String nombre, String categoria, BigDecimal precioMin, BigDecimal precioMax) {
-        log.info("Listando todos los productos");
-        return productoRepository.findAll().stream()
+    public List<ProductoResponse> listar(String nombre,
+                                         String categoria,
+                                         BigDecimal precioMin,
+                                         BigDecimal precioMax) {
+        log.info("Listando productos tomando en cuenta los campos como nombre: {}, categoria: {}, precioMin: {}, precioMax: {}",
+                nombre, categoria, precioMin, precioMax);
+
+        if (precioMin != null && precioMax != null && precioMin.compareTo(precioMax) > 0) {
+            throw new DatoInvalidoException("El precio mínimo no puede ser mayor al precio máximo");
+        }
+
+        String nombreFiltro = (nombre != null && !nombre.isBlank()) ? nombre.trim() : null;
+        Categoria categoriaFiltro = (categoria != null && !categoria.isBlank())
+                ? Categoria.obtenerCategoriaPorDescripcion(categoria.trim())
+                : null;
+
+        return productoRepository.buscarConFiltros(nombreFiltro, categoriaFiltro, precioMin, precioMax)
+                .stream()
                 .map(productoMapper::entidadAResponse)
                 .toList();
     }

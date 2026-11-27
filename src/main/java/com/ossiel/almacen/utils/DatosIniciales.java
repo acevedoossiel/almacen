@@ -5,6 +5,8 @@ import com.ossiel.almacen.entities.Sucursal;
 import com.ossiel.almacen.enums.Categoria;
 import com.ossiel.almacen.repositories.ProductoRepository;
 import com.ossiel.almacen.repositories.SucursalRepository;
+import com.ossiel.almacen.repositories.VentaRepository;
+import com.ossiel.almacen.services.ventas.VentaService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -19,6 +21,8 @@ import java.util.List;
 public class DatosIniciales implements CommandLineRunner {
     private final ProductoRepository productoRepository;
     private final SucursalRepository sucursalRepository;
+    private final VentaRepository ventaRepository;
+    private final VentaService ventaService;
     @Override
     public void run(String... args) throws Exception {
         if (productoRepository.count() == 0){
