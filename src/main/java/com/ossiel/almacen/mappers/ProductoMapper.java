@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class ProductoMapper {
+    public ProductoMapper(){}
 
     public Producto requestAEntidad(ProductoRequest request, Categoria categoria){
         return request == null
